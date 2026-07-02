@@ -5,7 +5,7 @@
 set -e
 
 echo "🚀 Sherlock Copilot Task Execution"
-echo "==================================="
+echo "===================================="
 echo ""
 
 # Step 1: Install
