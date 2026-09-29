@@ -110,6 +110,14 @@ python sherlock_console.py username jdoe --site GitHub
 
 Results are written to `results/<timestamp>_<type>_<input>/` (`hits.csv`, `report.txt`, `raw.json`). Phone mode cannot verify ownership; it normalises to E.164 and lists manual pivots.
 
+### Web console
+
+```bash
+python sherlock_web.py        # opens http://127.0.0.1:8000
+```
+
+Local browser UI over the same engine: live progress, sortable/filterable hit table, all-checks view, candidate breakdown, session history, and CSV/JSON export. It must run locally (server-side probing); it cannot be hosted on GitHub Pages because browsers block cross-site probes (CORS). It binds to loopback only.
+
 ## Credits
 
 Thank you to everyone who has contributed to Sherlock! ❤️
