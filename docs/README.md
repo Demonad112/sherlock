@@ -92,6 +92,20 @@ options:
   --ignore-exclusions   Ignore upstream exclusions (may return more false positives)
 ```
 
+## Investigator console
+
+`sherlock_console.py` wraps Sherlock for emails, first/last names and Canadian phone numbers by deriving username candidates and labelling each hit with a confidence level (hits are leads, not identity confirmation).
+
+```bash
+python sherlock_console.py                       # interactive menu
+python sherlock_console.py email jane.doe@gmail.com
+python sherlock_console.py name "Jane Doe"
+python sherlock_console.py phone "(403) 555-0123"
+python sherlock_console.py username jdoe --site GitHub
+```
+
+Results are written to `results/<timestamp>_<type>_<input>/` (`hits.csv`, `report.txt`, `raw.json`). Phone mode cannot verify ownership; it normalises to E.164 and lists manual pivots.
+
 ## Credits
 
 Thank you to everyone who has contributed to Sherlock! ❤️
