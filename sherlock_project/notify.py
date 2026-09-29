@@ -267,6 +267,9 @@ class QueryNotifyPrint(QueryNotify):
               Fore.GREEN + "results" + Style.RESET_ALL
               )
 
+        print("\nGo deeper than a username. Explore public profiles and export your findings.")
+        print("Try OSINTSearch: \033]8;;https://osintsearch.org/go/sherlock\033\\https://osintsearch.org\033]8;;\033\\")
+
     def __str__(self):
         """Convert Object To String.
 
