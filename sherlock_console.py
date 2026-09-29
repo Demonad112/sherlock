@@ -240,7 +240,8 @@ def write_reports(kind, value, candidates, hits, extras, settings, partial=False
     return d
 
 
-def investigate(kind, value, settings, site_data=None):
+def build_candidates(kind, value, settings):
+    """Derive (candidates, extras) for an input; no printing. Raises ValueError on bad input."""
     extras = {}
     if kind == "username":
         cands = username_candidates(value)
@@ -249,8 +250,6 @@ def investigate(kind, value, settings, site_data=None):
         if settings.gravatar:
             g = gravatar_check(value, proxy=settings.proxy)
             extras["gravatar"] = g or "no Gravatar for this email"
-            if g:
-                print(paint(f"Gravatar match (high confidence): {g}", Fore.GREEN, settings))
     elif kind == "name":
         cands = name_candidates(value, settings.max_variants)
     elif kind == "phone":
@@ -259,10 +258,18 @@ def investigate(kind, value, settings, site_data=None):
         extras["e164"] = info["e164"]
         extras["region"] = ("Alberta area code " if info["alberta"] else "Area code ") + info["area_code"]
         extras["manual pivots"] = phone_pivots(value)
-        print(paint(f"{info['e164']}  ({extras['region']})", Fore.CYAN, settings))
-        print(paint(METHOD_NOTES["phone"], Fore.YELLOW, settings))
     else:
         raise ValueError(kind)
+    return cands, extras
+
+
+def investigate(kind, value, settings, site_data=None):
+    cands, extras = build_candidates(kind, value, settings)
+    if extras.get("gravatar", "").startswith("http"):
+        print(paint(f"Gravatar match (high confidence): {extras['gravatar']}", Fore.GREEN, settings))
+    if kind == "phone":
+        print(paint(f"{extras['e164']}  ({extras['region']})", Fore.CYAN, settings))
+        print(paint(METHOD_NOTES["phone"], Fore.YELLOW, settings))
 
     print(f"Candidates: {', '.join(c for c, _ in cands)}")
     site_data = site_data or load_sites(settings)
