@@ -26,6 +26,7 @@ from sherlock_project.result import QueryStatus
 HERE = os.path.dirname(os.path.abspath(__file__))
 KINDS = ("username", "email", "name", "phone")
 
+ALLOWED_HOSTS = {"127.0.0.1", "localhost", "::1"}   # extended by --allow-host
 JOBS = {}
 JOBS_LOCK = threading.Lock()
 _SITE_CACHE = {}
@@ -160,7 +161,8 @@ class Handler(BaseHTTPRequestHandler):
     def _host_ok(self):
         # Defends against DNS rebinding: only answer to loopback host names.
         host = (self.headers.get("Host") or "").rsplit(":", 1)[0].strip("[]")
-        return host in ("127.0.0.1", "localhost", "::1")
+        return host in ALLOWED_HOSTS or any(
+            h.startswith("*.") and host.endswith(h[1:]) for h in ALLOWED_HOSTS)
 
     def do_GET(self):
         if not self._host_ok():
@@ -223,7 +225,11 @@ def main():
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--no-browser", action="store_true")
+    p.add_argument("--allow-host", action="append", default=[],
+                   help="extra Host header to accept, e.g. 192.168.1.20 or *.app.github.dev "
+                        "(needed for phone/LAN/Codespaces access; the UI has no login)")
     a = p.parse_args()
+    ALLOWED_HOSTS.update(h.lower() for h in a.allow_host)
     srv = ThreadingHTTPServer((a.host, a.port), Handler)
     url = f"http://{'127.0.0.1' if a.host == '0.0.0.0' else a.host}:{a.port}"  # noqa: S104
     print(f"Sherlock web console: {url}   (Ctrl-C to stop)")
