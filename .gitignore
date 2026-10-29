@@ -48,3 +48,4 @@ tests/.excluded_sites
 
 # Investigator console output
 results/
+.claude/settings.local.json
